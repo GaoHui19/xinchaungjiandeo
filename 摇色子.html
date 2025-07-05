@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>休班摇色子决定器</title>
+    <style>
+        /* Base Styles - Apply to all screen sizes */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px; /* Consistent padding */
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            max-width: 850px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 2em;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        /* --- Name Tag Styles --- */
+        .name-tags-container {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            box-shadow: inset 0 1px 4px rgba(0,0,0,0.05);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px; /* Spacing between tags */
+            justify-content: center; /* Center tags */
+        }
+
+        .name-tag {
+            padding: 8px 15px;
+            background-color: #e0e0e0;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            color: #555;
+            user-select: none; /* Prevent text selection */
+            border: 1px solid #d0d0d0;
+        }
+
+        .name-tag.selected {
+            background: linear-gradient(45deg, #8dc63f, #a7d96a); /* Green gradient for selected */
+            color: white;
+            border-color: #8dc63f;
+            box-shadow: 0 2px 6px rgba(141, 198, 63, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .name-tag:hover:not(.selected) {
+            background-color: #d0d0d0;
+            transform: translateY(-1px);
+        }
+
+        /* --- Control Group Styles --- */
+        .controls-group {
+            display: flex;
+            flex-direction: column; /* Default to column for small screens, row on larger */
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .count-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            align-items: center;
+            background: #f0f2f5;
+            padding: 12px 20px;
+            border-radius: 12px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+            flex-wrap: wrap; /* Allow wrapping */
+        }
+
+        .count-inputs label {
+            font-weight: bold;
+            color: #555;
+            font-size: 14.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .count-inputs input[type="number"] {
+            width: 65px;
+            padding: 7px 9px;
+            border: 1px solid #cdd4da;
+            border-radius: 6px;
+            font-size: 14px;
+            text-align: center;
+            background-color: #fff;
+            transition: border-color 0.2s;
+        }
+        .count-inputs input[type="number"]:focus {
+            outline: none;
+            border-color: #764ba2;
+            box-shadow: 0 0 0 2px rgba(118, 75, 162, 0.2);
+        }
+        /* Hide spin buttons for number inputs */
+        .count-inputs input[type="number"]::-webkit-outer-spin-button,
+        .count-inputs input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .count-inputs input[type="number"] {
+            -moz-appearance: textfield; /* Firefox */
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 10px 20px;
+            font-size: 15px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+        }
+        
+        .roll-btn {
+            background: linear-gradient(45deg, #ff5c5c, #e64a4a);
+            color: white;
+            font-size: 17px;
+            padding: 13px 26px;
+        }
+        
+        .roll-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 92, 92, 0.4);
+        }
+        
+        .roll-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .reset-btn {
+            background: linear-gradient(45deg, #3bbabb, #35989e);
+            color: white;
+        }
+        
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 186, 187, 0.4);
+        }
+
+        .select-all-btn, .deselect-all-btn { /* Combined styles for efficiency */
+            background: linear-gradient(45deg, #9b6bcc, #ae7edb); /* Same color as select-all, or define distinct colors */
+            color: white;
+        }
+        
+        .select-all-btn:hover, .deselect-all-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(155, 107, 204, 0.4);
+        }
+        /* Specific deselect color */
+        .deselect-all-btn {
+            background: linear-gradient(45deg, #efbde0, #9bc0f0);
+        }
+        .deselect-all-btn:hover {
+            box-shadow: 0 5px 15px rgba(239, 189, 224, 0.4);
+        }
+        
+        /* --- Results Grid Styles --- */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .person-card {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .person-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .person-header { /* Kept for structure, but name is now the tag */
+            display: flex;
+            justify-content: center; /* Center the person's name/dice */
+            align-items: center;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        .person-name-card { /* Name display inside the card (no checkbox here) */
+            font-weight: bold;
+            font-size: 15px;
+            color: #333;
+            text-align: center;
+            padding: 4px 0;
+        }
+        
+        .dice-display {
+            font-size: 44px;
+            margin: 8px 0;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .result {
+            font-weight: bold;
+            font-size: 16px;
+            padding: 6px 14px;
+            border-radius: 18px;
+            margin-top: 8px;
+        }
+        
+        .work {
+            background: linear-gradient(45deg, #ff8c8c, #fcc0cc);
+            color: #c93a6a;
+            border: 2px solid #ff8c8c;
+        }
+        
+        .rest {
+            background: linear-gradient(45deg, #9ae2df, #c9e9f2);
+            color: #26a69a;
+            border: 2px solid #9ae2df;
+        }
+        
+        .work-card {
+            border-color: #ff8c8c;
+        }
+        
+        .rest-card {
+            border-color: #9ae2df;
+        }
+
+        /* Removed .not-participating as visibility is handled by rendering in grid */
+        
+        .summary {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 18px;
+            margin-top: 15px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .summary h3 {
+            color: #495057;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+        }
+        
+        .summary-stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            flex: 1;
+            min-width: 90px;
+        }
+        
+        .stat-number {
+            font-size: 22px;
+            font-weight: bold;
+            color: #5c6268;
+        }
+        
+        .stat-label {
+            font-size: 13px;
+            color: #6c757d;
+            margin-top: 3px;
+        }
+        
+        .rolling {
+            animation: spin 0.4s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.4s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Media Queries for Responsiveness --- */
+
+        /* Tablets and larger phones (e.g., landscape orientation) */
+        @media (min-width: 601px) and (max-width: 850px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 1.9em;
+            }
+            .controls-group {
+                flex-direction: row; /* Controls side-by-side on tablets */
+                justify-content: center;
+                align-items: flex-start;
+                gap: 20px;
+            }
+            .action-buttons {
+                flex-grow: 1;
+                justify-content: flex-start;
+            }
+            .count-inputs {
+                padding: 10px 15px;
+                flex-grow: 1;
+                justify-content: center;
+            }
+            button {
+                padding: 9px 18px;
+                font-size: 14px;
+            }
+            .roll-btn {
+                padding: 11px 22px;
+                font-size: 16px;
+            }
+            .results-grid {
+                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+                gap: 10px;
+            }
+            .name-tag {
+                font-size: 13.5px;
+                padding: 7px 14px;
+            }
+        }
+
+        /* Mobile Phones (Portrait) - max-width: 600px */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 15px;
+                border-radius: 15px;
+            }
+            h1 {
+                font-size: 1.7em;
+                margin-bottom: 20px;
+            }
+            .name-tags-container {
+                padding: 10px;
+                gap: 8px;
+            }
+            .name-tag {
+                padding: 6px 12px;
+                font-size: 13px;
+                border-radius: 16px;
+            }
+            .controls-group {
+                flex-direction: column;
+                gap: 12px;
+                margin-bottom: 20px;
+            }
+            .count-inputs {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px 15px;
+                border-radius: 10px;
+            }
+            .count-inputs label {
+                font-size: 14px;
+            }
+            .count-inputs input[type="number"] {
+                width: 60px;
+                font-size: 13px;
+            }
+            .action-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            button {
+                width: 100%;
+                padding: 10px 15px;
+                font-size: 14px;
+                border-radius: 18px;
+            }
+            .roll-btn {
+                padding: 12px 20px;
+                font-size: 15px;
+            }
+            .results-grid {
+                grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+                gap: 8px;
+                margin-bottom: 20px;
+            }
+            .person-card {
+                padding: 10px;
+                border-radius: 10px;
+            }
+            .person-name-card {
+                font-size: 14px;
+            }
+            .dice-display {
+                font-size: 36px;
+                height: 45px;
+                margin: 5px 0;
+            }
+            .result {
+                font-size: 13px;
+                padding: 5px 10px;
+                border-radius: 16px;
+            }
+            .summary {
+                padding: 15px;
+                margin-top: 15px;
+                border-radius: 10px;
+            }
+            .summary h3 {
+                font-size: 1em;
+            }
+            .summary-stats {
+                gap: 10px;
+            }
+            .stat-number {
+                font-size: 18px;
+            }
+            .stat-label {
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎲 摇色子休班决定器</h1>
+        
+        <div class="name-tags-container" id="nameTagsContainer">
+            </div>
+
+        <div class="controls-group">
+            <div class="count-inputs">
+                <label for="restCountInput">休班人数:
+                    <input type="number" id="restCountInput" min="0" value="0" onchange="updateWorkCount()">
+                </label>
+                <label for="workCountInput">上班人数:
+                    <input type="number" id="workCountInput" min="0" value="0" onchange="updateRestCount()">
+                </label>
+            </div>
+
+            <div class="action-buttons">
+                <button class="roll-btn" onclick="rollAllDice()">🎲 开始摇色子</button>
+                <button class="reset-btn" onclick="resetAll()">🔄 重新开始</button>
+                <button class="select-all-btn" onclick="toggleAllParticipants(true)">✅ 全选</button>
+                <button class="deselect-all-btn" onclick="toggleAllParticipants(false)">❌ 全不选</button>
+            </div>
+        </div>
+        
+        <div class="results-grid" id="resultsGrid">
+        </div>
+        
+        <div class="summary" id="summary" style="display: none;">
+            <h3>📊 统计结果</h3>
+            <div class="summary-stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="finalWorkCount">0</div>
+                    <div class="stat-label">需要上班</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="finalRestCount">0</div>
+                    <div class="stat-label">可以休班</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="finalRestPercentage">0%</div>
+                    <div class="stat-label">休班比例</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const people = [
+            '小博', '小迪', '小董', '小峰', '小高', '小海', '小好', '小静', '小康',
+            '小磊', '小亮', '小梦', '小鹏', '小琪', '小帅', '小玉', '小云', '小邹'
+        ];
+        
+        let results = {};
+        let isRolling = false;
+        let participatingPeople = []; // Stores names of currently selected participants
+
+        // Initialize counts for rest and work
+        let desiredRestCount = 0;
+        let desiredWorkCount = 0;
+
+        // Initialize page: generate name tags and set up initial state
+        function initializePage() {
+            const nameTagsContainer = document.getElementById('nameTagsContainer');
+            nameTagsContainer.innerHTML = '';
+            
+            // Generate name tags
+            people.forEach((person, index) => {
+                const tag = document.createElement('div');
+                tag.className = 'name-tag';
+                tag.id = `tag-${index}`;
+                tag.textContent = person;
+                tag.onclick = () => toggleParticipation(index);
+                nameTagsContainer.appendChild(tag);
+            });
+
+            // All deselected by default
+            toggleAllParticipants(false); 
+
+            updateCountsInput(); // Set initial counts based on current (empty) selection
+            document.getElementById('summary').style.display = 'none'; // Ensure summary is hidden on load
+            document.querySelector('.roll-btn').disabled = false; // Enable roll button
+        }
+        
+        // Toggle participation for a single person (clicked tag)
+        function toggleParticipation(index) {
+            const personName = people[index];
+            const tag = document.getElementById(`tag-${index}`);
+            
+            if (participatingPeople.includes(personName)) {
+                // Deselect
+                participatingPeople = participatingPeople.filter(p => p !== personName);
+                tag.classList.remove('selected');
+            } else {
+                // Select
+                participatingPeople.push(personName);
+                tag.classList.add('selected');
+            }
+            updateCountsInput(); // Update counts based on current participants
+            updateResultsGrid(); // Update the results grid to reflect selected participants
+            if (Object.keys(results).length > 0 && !isRolling) {
+                showSummary(); // Update summary if already results displayed
+            }
+        }
+
+        // Toggle all participants (used by "全选" and "全不选" buttons)
+        function toggleAllParticipants(select) {
+            participatingPeople = []; // Clear current selections
+            people.forEach((person, index) => {
+                const tag = document.getElementById(`tag-${index}`);
+                if (select) {
+                    participatingPeople.push(person);
+                    tag.classList.add('selected');
+                } else {
+                    tag.classList.remove('selected');
+                }
+            });
+            updateCountsInput();
+            updateResultsGrid();
+            if (Object.keys(results).length > 0 && !isRolling) {
+                showSummary();
+            }
+        }
+
+        // Update work count when rest count changes
+        function updateWorkCount() {
+            desiredRestCount = parseInt(document.getElementById('restCountInput').value) || 0;
+            const totalParticipants = participatingPeople.length;
+            desiredWorkCount = totalParticipants - desiredRestCount;
+            if (desiredWorkCount < 0) { // Cannot have negative work count
+                desiredWorkCount = 0;
+                desiredRestCount = totalParticipants; // If rest > total, then rest = total
+            }
+            document.getElementById('workCountInput').value = desiredWorkCount;
+            document.getElementById('restCountInput').value = desiredRestCount;
+            ensureValidCounts();
+        }
+
+        // Update rest count when work count changes
+        function updateRestCount() {
+            desiredWorkCount = parseInt(document.getElementById('workCountInput').value) || 0;
+            const totalParticipants = participatingPeople.length;
+            desiredRestCount = totalParticipants - desiredWorkCount;
+            if (desiredRestCount < 0) { // Cannot have negative rest count
+                desiredRestCount = 0;
+                desiredWorkCount = totalParticipants; // If work > total, then work = total
+            }
+            document.getElementById('restCountInput').value = desiredRestCount;
+            document.getElementById('workCountInput').value = desiredWorkCount;
+            ensureValidCounts();
+        }
+
+        // Ensure counts are within valid range and sum up to total participants
+        function ensureValidCounts() {
+            const totalParticipants = participatingPeople.length;
+            
+            desiredRestCount = parseInt(document.getElementById('restCountInput').value);
+            desiredWorkCount = parseInt(document.getElementById('workCountInput').value);
+
+            if (isNaN(desiredRestCount)) desiredRestCount = 0;
+            if (isNaN(desiredWorkCount)) desiredWorkCount = 0;
+
+            // If sum exceeds total, prioritize adjusting the larger count
+            if (desiredRestCount + desiredWorkCount > totalParticipants) {
+                if (desiredRestCount > totalParticipants) {
+                    desiredRestCount = totalParticipants;
+                    desiredWorkCount = 0;
+                } else if (desiredWorkCount > totalParticipants) {
+                    desiredWorkCount = totalParticipants;
+                    desiredRestCount = 0;
+                } else { 
+                    const excess = (desiredRestCount + desiredWorkCount) - totalParticipants;
+                    if (desiredRestCount > desiredWorkCount) {
+                        desiredRestCount -= excess;
+                    } else {
+                        desiredWorkCount -= excess;
+                    }
+                }
+            }
+            
+            // If sum is less than total, make up the difference by adding to work count
+            if (desiredRestCount + desiredWorkCount < totalParticipants) {
+                desiredWorkCount = totalParticipants - desiredRestCount;
+            }
+
+            document.getElementById('restCountInput').value = Math.max(0, desiredRestCount);
+            document.getElementById('workCountInput').value = Math.max(0, desiredWorkCount);
+        }
+
+        // Update count inputs based on current participating people
+        function updateCountsInput() {
+            const totalParticipants = participatingPeople.length;
+            document.getElementById('restCountInput').max = totalParticipants;
+            document.getElementById('workCountInput').max = totalParticipants;
+
+            // Re-adjust desired counts if total participants change significantly
+            if (desiredRestCount + desiredWorkCount !== totalParticipants || totalParticipants === 0) {
+                 if (totalParticipants > 0) {
+                    // Try to maintain previous ratio, or default to balanced if first time
+                    if (desiredRestCount === 0 && desiredWorkCount === 0) {
+                        desiredRestCount = Math.floor(totalParticipants / 2);
+                    } else {
+                        // Scale existing counts if possible, otherwise rebalance
+                        const oldTotal = desiredRestCount + desiredWorkCount;
+                        if (oldTotal > 0) {
+                            desiredRestCount = Math.round(desiredRestCount / oldTotal * totalParticipants);
+                        } else {
+                            desiredRestCount = Math.floor(totalParticipants / 2);
+                        }
+                    }
+                    desiredWorkCount = totalParticipants - desiredRestCount;
+                } else {
+                    desiredRestCount = 0;
+                    desiredWorkCount = 0;
+                }
+            }
+            document.getElementById('restCountInput').value = desiredRestCount;
+            document.getElementById('workCountInput').value = desiredWorkCount;
+            ensureValidCounts(); // Re-validate after update
+        }
+        
+        // Update the results grid to show only selected participants
+        function updateResultsGrid() {
+            const grid = document.getElementById('resultsGrid');
+            grid.innerHTML = ''; // Clear existing cards
+
+            participatingPeople.forEach(personName => {
+                const index = people.indexOf(personName); // Get original index to match IDs
+                const card = document.createElement('div');
+                card.className = 'person-card';
+                card.id = `person-card-${index}`; // Use a different ID for card
+                card.innerHTML = `
+                    <div class="person-name-card">${personName}</div>
+                    <div class="dice-display" id="dice-${index}">🎲</div>
+                    <div class="result" id="result-${index}" style="display: none;"></div>
+                `;
+                grid.appendChild(card);
+
+                // If this person had a previous result, display it
+                if (results[personName]) {
+                    showResult(index, results[personName].isRest);
+                }
+            });
+
+            // If no participants, hide summary
+            if (participatingPeople.length === 0) {
+                document.getElementById('summary').style.display = 'none';
+            }
+        }
+
+        // Dice roll animation
+        function rollDiceAnimation(index, finalResult, duration = 1500) {
+            const diceElement = document.getElementById(`dice-${index}`);
+            const diceSymbols = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+            
+            diceElement.classList.add('rolling');
+            
+            const interval = setInterval(() => {
+                diceElement.textContent = diceSymbols[Math.floor(Math.random() * 6)];
+            }, 80);
+            
+            setTimeout(() => {
+                clearInterval(interval);
+                diceElement.classList.remove('rolling');
+                
+                // Set the final result based on the pre-determined outcome
+                const finalRoll = finalResult.isRest ? Math.floor(Math.random() * 3) + 4 : Math.floor(Math.random() * 3) + 1; // 4-6 for rest, 1-3 for work
+                diceElement.textContent = diceSymbols[finalRoll - 1];
+                
+                showResult(index, finalResult.isRest);
+                
+                // Check if all participating results are in
+                if (Object.keys(results).length === participatingPeople.length) {
+                    showSummary();
+                    isRolling = false;
+                    document.querySelector('.roll-btn').disabled = false;
+                }
+            }, duration + Math.random() * 400);
+        }
+        
+        // Display individual result for a card
+        function showResult(index, isRest) {
+            const resultElement = document.getElementById(`result-${index}`);
+            const cardElement = document.getElementById(`person-card-${index}`); // Use the card ID
+
+            if (resultElement && cardElement) { // Ensure elements exist
+                resultElement.textContent = isRest ? '😴 休班' : '💼 上班';
+                resultElement.className = `result ${isRest ? 'rest' : 'work'}`;
+                resultElement.style.display = 'block';
+                
+                cardElement.classList.remove('work-card', 'rest-card', 'fade-in');
+                cardElement.classList.add(isRest ? 'rest-card' : 'work-card');
+                cardElement.classList.add('fade-in');
+            }
+        }
+        
+        // Show summary results
+        function showSummary() {
+            const currentResults = Object.values(results).filter(r => participatingPeople.includes(r.person));
+
+            const workCount = currentResults.filter(r => !r.isRest).length;
+            const restCount = currentResults.filter(r => r.isRest).length;
+            const totalParticipants = participatingPeople.length; // Use the actual count of participating people
+            
+            const restPercentage = totalParticipants > 0 ? Math.round((restCount / totalParticipants) * 100) : 0;
+            
+            document.getElementById('finalWorkCount').textContent = workCount;
+            document.getElementById('finalRestCount').textContent = restCount;
+            document.getElementById('finalRestPercentage').textContent = restPercentage + '%';
+            
+            document.getElementById('summary').style.display = 'block';
+            document.getElementById('summary').classList.add('fade-in');
+        }
+        
+        // Start rolling dice
+        function rollAllDice() {
+            if (isRolling) return;
+
+            const totalParticipants = participatingPeople.length;
+            desiredRestCount = parseInt(document.getElementById('restCountInput').value) || 0;
+            desiredWorkCount = parseInt(document.getElementById('workCountInput').value) || 0;
+
+            if (totalParticipants === 0) {
+                alert('请至少选择一位参与者！');
+                return;
+            }
+
+            if (desiredRestCount + desiredWorkCount !== totalParticipants) {
+                alert(`休班人数 (${desiredRestCount}) 和上班人数 (${desiredWorkCount}) 的总和必须等于参与人数 (${totalParticipants})。请调整。`);
+                return;
+            }
+            
+            isRolling = true;
+            results = {}; // Clear previous results
+            document.querySelector('.roll-btn').disabled = true;
+            document.getElementById('summary').style.display = 'none';
+            
+            // Clear results display on all cards before starting new roll
+            participatingPeople.forEach(personName => {
+                const index = people.indexOf(personName);
+                const dice = document.getElementById(`dice-${index}`);
+                const result = document.getElementById(`result-${index}`);
+                const card = document.getElementById(`person-card-${index}`);
+
+                if (dice) dice.textContent = '🎲';
+                if (result) result.style.display = 'none';
+                if (card) card.classList.remove('work-card', 'rest-card', 'fade-in');
+            });
+            
+            // Create an array of outcomes (true for rest, false for work)
+            let outcomes = [];
+            for (let i = 0; i < desiredRestCount; i++) {
+                outcomes.push(true); // Rest
+            }
+            for (let i = 0; i < desiredWorkCount; i++) {
+                outcomes.push(false); // Work
+            }
+
+            // Shuffle the outcomes
+            for (let i = outcomes.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [outcomes[i], outcomes[j]] = [outcomes[j], outcomes[i]];
+            }
+
+            // Assign shuffled outcomes to shuffled participants
+            let shuffledParticipants = [...participatingPeople];
+            for (let i = shuffledParticipants.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledParticipants[i], shuffledParticipants[j]] = [shuffledParticipants[j], shuffledParticipants[i]];
+            }
+
+            shuffledParticipants.forEach((personName, i) => {
+                const index = people.indexOf(personName);
+                if (index !== -1) {
+                    const isRest = outcomes[i];
+                    results[personName] = { roll: 0, isRest: isRest, person: personName }; // Store person name in result
+                    setTimeout(() => {
+                        rollDiceAnimation(index, {isRest: isRest});
+                    }, Math.random() * 300);
+                }
+            });
+        }
+        
+        // Reset all results and selections
+        function resetAll() {
+            if (isRolling) return;
+            
+            results = {};
+            document.getElementById('summary').style.display = 'none';
+            document.querySelector('.roll-btn').disabled = false;
+            
+            // Deselect all tags
+            toggleAllParticipants(false); 
+            // Do NOT re-select all by default here, as per the last request.
+            // If you want to re-select all after a reset, change the line above to toggleAllParticipants(true); 
+
+            // Clear results display on all cards
+            people.forEach((person, index) => { // Iterate over ALL people for cleanup
+                const card = document.getElementById(`person-card-${index}`);
+                const dice = document.getElementById(`dice-${index}`);
+                const result = document.getElementById(`result-${index}`);
+
+                if (card) card.classList.remove('work-card', 'rest-card', 'fade-in');
+                if (dice) dice.textContent = '🎲';
+                if (result) result.style.display = 'none';
+            });
+            updateCountsInput();
+        }
+        
+        // Initialize on page load
+        window.onload = function() {
+            initializePage();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>百分比计数器</title>
+    <style>
+        /* 通用样式 */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        /* 主容器 */
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 50px;
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            width: 100%;
+            max-width: 650px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s ease;
+            opacity: 0;
+        }
+
+        .container:hover::before {
+            opacity: 1;
+            animation: shine 2s ease-in-out;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .container:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 35px 70px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 标题样式 */
+        h1 {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: -2px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+
+        /* 输入组样式 */
+        .input-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-group input[type="number"],
+        .input-group input[type="text"] {
+            padding: 18px 24px;
+            border: 3px solid #e1e8ed;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            width: 200px;
+            transition: all 0.3s ease;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
+        .input-group input[type="number"]:focus,
+        .input-group input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+            transform: scale(1.02);
+        }
+
+        .input-group button {
+            padding: 18px 35px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 700;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .input-group button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .input-group button:hover::before {
+            left: 100%;
+        }
+
+        /* 添加按钮样式 */
+        #addButton {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        #addButton:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        #addButton:active {
+            transform: translateY(-1px);
+        }
+
+        /* 重置按钮样式 */
+        #resetButton {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+        }
+
+        #resetButton:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(255, 107, 107, 0.4);
+        }
+
+        #resetButton:active {
+            transform: translateY(-1px);
+        }
+
+        /* 图表容器 */
+        .chart-container {
+            width: 280px;
+            height: 280px;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            border-radius: 50%;
+            margin: 40px auto;
+            position: relative;
+            box-shadow: 
+                inset 0 0 25px rgba(0, 0, 0, 0.1),
+                0 10px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.5s ease;
+        }
+
+        .chart-container:hover {
+            transform: scale(1.05);
+            box-shadow: 
+                inset 0 0 30px rgba(0, 0, 0, 0.15),
+                0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 饼图样式 */
+        .pie-chart {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-image: conic-gradient(
+                from 0deg,
+                #10ac84 0%,
+                #10ac84 var(--percentage),
+                #ddd var(--percentage)
+            );
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .pie-chart::after {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        /* 图表文本 */
+        .chart-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #2c3e50;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+            z-index: 10;
+        }
+
+        /* 历史记录 */
+        .history-section {
+            margin-top: 30px;
+        }
+
+        .history-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .history-title::before,
+        .history-title::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 1px;
+        }
+
+        .history-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 15px;
+            padding: 20px;
+            /* 移除高度限制和滚动条 */
+            /* max-height: 200px; */
+            /* overflow-y: auto; */
+        }
+
+        .history-list:empty::after {
+            content: '暂无记录';
+            display: block;
+            text-align: center;
+            color: #999;
+            font-style: italic;
+            padding: 20px;
+        }
+
+        .history-list li {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            padding: 15px 20px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1rem;
+            color: #2c3e50;
+            animation: slideIn 0.5s ease-out;
+            border-left: 4px solid #667eea;
+            font-weight: 500;
+        }
+
+        /* 动画效果 */
+        @keyframes slideIn {
+            from { 
+                opacity: 0; 
+                transform: translateX(-30px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateX(0); 
+            }
+        }
+
+        /* 警告动画 */
+        .warning-shake {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* 用户名输入特殊样式 */
+        #nameInput {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+            border-color: #667eea !important;
+        }
+
+        #nameInput::placeholder {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        /* 当前用户显示 */
+        .current-user {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 25px;
+            }
+            h1 {
+                font-size: 2.5rem;
+            }
+            .input-group {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .input-group input, .input-group button {
+                width: 100%;
+                max-width: 280px;
+            }
+            .chart-container {
+                width: 220px;
+                height: 220px;
+            }
+            .chart-text {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>百分比计数器</h1>
+        <p class="subtitle">输入姓名和百分比数值，追踪每个人的贡献！</p>
+
+        <div id="currentUser" class="current-user" style="display: none;">
+            👤 当前用户：<span id="currentUserName"></span>
+        </div>
+
+        <div class="input-group">
+            <div class="input-wrapper">
+                <input type="text" id="nameInput" placeholder="请输入姓名" maxlength="10">
+            </div>
+            <div class="input-wrapper">
+                <input type="number" id="percentageInput" placeholder="请输入百分比 (1-100)" min="1" max="100" step="1">
+            </div>
+            <button id="addButton">➕ 添加</button>
+            <button id="resetButton">🔄 重置</button>
+        </div>
+
+        <div class="chart-container">
+            <div class="pie-chart" id="pieChart">
+                <span class="chart-text" id="percentageText">0%</span>
+            </div>
+        </div>
+        
+        <div class="history-section">
+            <h3 class="history-title">操作历史</h3>
+            <ul id="historyList" class="history-list"></ul>
+        </div>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const nameInput = document.getElementById('nameInput');
+        const percentageInput = document.getElementById('percentageInput');
+        const addButton = document.getElementById('addButton');
+        const resetButton = document.getElementById('resetButton');
+        const pieChart = document.getElementById('pieChart');
+        const percentageText = document.getElementById('percentageText');
+        const historyList = document.getElementById('historyList');
+        const container = document.querySelector('.container');
+        const currentUserDiv = document.getElementById('currentUser');
+        const currentUserName = document.getElementById('currentUserName');
+
+        // 初始化总百分比和当前用户
+        let totalPercentage = 0;
+        let currentUser = '';
+
+        // 创建音频上下文用于声音提示
+        let audioContext;
+        
+        function initAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        // 播放警告音效
+        function playWarningSound() {
+            initAudioContext();
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            // 设置警告音参数
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+            oscillator.frequency.setValueAtTime(400, audioContext.currentTime + 0.1);
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.2);
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.3);
+        }
+
+        // 播放成功音效
+        function playSuccessSound() {
+            initAudioContext();
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            // 设置成功音参数
+            oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+            oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+            oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
+            
+            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.3);
+        }
+
+        // 更新饼图和文本
+        function updateChart(value) {
+            pieChart.style.setProperty('--percentage', `${value}%`);
+            percentageText.textContent = `${Math.round(value)}%`;
+            
+            // 根据百分比改变颜色
+            let color1, color2;
+            if (value <= 50) {
+                color1 = '#10ac84'; // 绿色
+                color2 = '#10ac84';
+            } else if (value <= 80) {
+                color1 = '#f39c12'; // 橙色
+                color2 = '#e67e22';
+            } else {
+                color1 = '#e74c3c'; // 红色
+                color2 = '#c0392b';
+            }
+            
+            pieChart.style.backgroundImage = `conic-gradient(
+                from 0deg,
+                ${color1} 0%,
+                ${color2} ${value}%,
+                #ddd ${value}%
+            )`;
+        }
+
+        // 更新当前用户显示
+        function updateCurrentUser() {
+            const name = nameInput.value.trim();
+            if (name && name !== currentUser) {
+                currentUser = name;
+                currentUserName.textContent = currentUser;
+                currentUserDiv.style.display = 'inline-flex';
+            }
+        }
+
+        // 添加百分比
+        function addPercentage() {
+            const name = nameInput.value.trim();
+            const value = parseInt(percentageInput.value, 10);
+
+            // 验证姓名输入
+            if (!name) {
+                container.classList.add('warning-shake');
+                playWarningSound();
+                setTimeout(() => container.classList.remove('warning-shake'), 500);
+                alert('请先输入姓名！');
+                nameInput.focus();
+                return;
+            }
+
+            // 验证百分比输入
+            if (isNaN(value) || value <= 0 || value > 100) {
+                container.classList.add('warning-shake');
+                playWarningSound();
+                setTimeout(() => container.classList.remove('warning-shake'), 500);
+                alert('请输入1到100之间的有效数字！');
+                percentageInput.value = '';
+                return;
+            }
+
+            // 更新当前用户
+            updateCurrentUser();
+            
+            const newTotal = totalPercentage + value;
+
+            // 检查是否超过100%
+            if (newTotal > 100) {
+                // 仍然添加，但显示超出信息
+                totalPercentage = newTotal;
+                const overAmount = newTotal - 100;
+                
+                // 饼图显示100%，但文本显示实际总数
+                updateChart(100); // 饼图固定在100%
+                percentageText.textContent = `${newTotal}%`; // 文本显示实际数值
+                percentageText.style.color = '#e74c3c'; // 超出时文字变红
+                
+                addHistoryItem(name, value, totalPercentage);
+                percentageInput.value = '';
+                
+                container.classList.add('warning-shake');
+                playWarningSound();
+                setTimeout(() => container.classList.remove('warning-shake'), 500);
+                alert(`⚠️ ${name} 已超出！\n总计：${newTotal}%\n超出：${overAmount}%\n饼图显示已达上限。`);
+                return;
+            }
+
+            // 正常情况下更新
+            totalPercentage = newTotal;
+            updateChart(totalPercentage);
+            percentageText.style.color = '#2c3e50'; // 恢复正常颜色
+            addHistoryItem(name, value, totalPercentage);
+            percentageInput.value = '';
+            
+            // 播放成功音效
+            playSuccessSound();
+        }
+
+        // 添加历史记录项
+        function addHistoryItem(name, value, currentTotal) {
+            const listItem = document.createElement('li');
+            const timestamp = new Date().toLocaleTimeString('zh-CN', { 
+                hour12: false, 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            });
+            
+            let statusText = '';
+            let statusColor = '#667eea';
+            
+            if (currentTotal > 100) {
+                const overAmount = currentTotal - 100;
+                statusText = `总计: ${currentTotal}% (超出 ${overAmount}%)`;
+                statusColor = '#e74c3c';
+            } else {
+                statusText = `总计: ${currentTotal}%`;
+                statusColor = '#667eea';
+            }
+            
+            listItem.innerHTML = `
+                <div style="display: flex; flex-direction: column; gap: 5px; flex: 1;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span><strong style="color: #667eea;">${name}</strong> ➕ 添加了 ${value}%</span>
+                        <span style="font-size: 0.9rem; color: #888;">${timestamp}</span>
+                    </div>
+                    <span style="color: ${statusColor}; font-weight: 700; font-size: 0.95rem;">${statusText}</span>
+                </div>
+            `;
+            
+            historyList.appendChild(listItem);
+        }
+
+        // 重置计数器
+        function resetCounter() {
+            if (totalPercentage === 0) {
+                alert('💡 提示：计数器已经是初始状态了！');
+                return;
+            }
+            
+            if (confirm('🔄 确定要重置计数器吗？这将清除所有数据和历史记录。')) {
+                totalPercentage = 0;
+                currentUser = '';
+                updateChart(totalPercentage);
+                percentageText.style.color = '#2c3e50'; // 恢复正常颜色
+                nameInput.value = '';
+                percentageInput.value = '';
+                currentUserDiv.style.display = 'none';
+                historyList.innerHTML = '';
+                
+                // 添加重置记录
+                const listItem = document.createElement('li');
+                const timestamp = new Date().toLocaleTimeString('zh-CN', { 
+                    hour12: false, 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit' 
+                });
+                listItem.innerHTML = `
+                    <span style="color: #e74c3c;">🔄 ${timestamp} - 计数器已重置</span>
+                `;
+                historyList.appendChild(listItem);
+                
+                alert('✅ 计数器已成功重置！');
+            }
+        }
+
+        // 事件监听器
+        addButton.addEventListener('click', addPercentage);
+        resetButton.addEventListener('click', resetCounter);
+
+        // 回车键添加
+        nameInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                percentageInput.focus();
+            }
+        });
+
+        percentageInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                addPercentage();
+            }
+        });
+
+        // 姓名输入变化时更新当前用户显示
+        nameInput.addEventListener('input', () => {
+            const name = nameInput.value.trim();
+            if (name) {
+                updateCurrentUser();
+            }
+        });
+
+        // 输入框焦点效果
+        nameInput.addEventListener('focus', () => {
+            nameInput.parentElement.style.transform = 'scale(1.02)';
+        });
+
+        nameInput.addEventListener('blur', () => {
+            nameInput.parentElement.style.transform = 'scale(1)';
+        });
+
+        percentageInput.addEventListener('focus', () => {
+            percentageInput.parentElement.style.transform = 'scale(1.02)';
+        });
+
+        percentageInput.addEventListener('blur', () => {
+            percentageInput.parentElement.style.transform = 'scale(1)';
+        });
+
+        // 初始化图表
+        updateChart(0);
+
+        // 页面加载完成后的欢迎提示
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                console.log('🎉 百分比计数器已加载完成！');
+            }, 500);
+        });
+    </script>
+
+</body>
+</html>

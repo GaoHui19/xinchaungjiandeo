@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全功能计算器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .calculator {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 25px;
+            width: 400px;
+            max-width: 100%;
+        }
+
+        .calculator-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .calculator-title {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .calculator-icon {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .mode-toggle {
+            display: flex;
+            gap: 10px;
+        }
+
+        .toggle-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .toggle-btn.active {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .display {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: white;
+            text-align: right;
+        }
+
+        .equation {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 5px;
+            min-height: 20px;
+        }
+
+        .result {
+            font-size: 32px;
+            font-weight: 300;
+            word-break: break-all;
+        }
+
+        .memory-indicator {
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            font-size: 10px;
+            color: #4ecdc4;
+            font-weight: bold;
+        }
+
+        .angle-mode {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 10px;
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        .history-panel {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .history-title {
+            color: white;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .history-item {
+            font-size: 12px;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .history-equation {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .history-result {
+            color: white;
+            font-weight: 600;
+        }
+
+        .scientific-panel {
+            margin-bottom: 15px;
+        }
+
+        .function-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .memory-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .constants-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .btn {
+            height: 60px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-number {
+            background: linear-gradient(145deg, #4a5568, #2d3748);
+        }
+
+        .btn-operator {
+            background: linear-gradient(145deg, #ff6b6b, #e55353);
+        }
+
+        .btn-function {
+            background: linear-gradient(145deg, #4ecdc4, #45b7b8);
+        }
+
+        .btn-clear {
+            background: linear-gradient(145deg, #ff4757, #ff3742);
+        }
+
+        .btn-equals {
+            background: linear-gradient(145deg, #3742fa, #2f32e2);
+        }
+
+        .btn-scientific {
+            height: 35px;
+            font-size: 12px;
+            background: linear-gradient(145deg, #9c88ff, #8c7ae6);
+        }
+
+        .btn-memory {
+            height: 35px;
+            font-size: 12px;
+            background: linear-gradient(145deg, #26de81, #20bf6b);
+        }
+
+        .btn-constant {
+            height: 35px;
+            font-size: 12px;
+            background: linear-gradient(145deg, #ffa726, #ff9800);
+        }
+
+        .btn-zero {
+            grid-column: span 2;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 480px) {
+            .calculator {
+                width: 100%;
+                padding: 20px;
+            }
+            
+            .btn {
+                height: 50px;
+                font-size: 16px;
+            }
+            
+            .result {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="calculator-header">
+            <div class="calculator-title">
+                <div class="calculator-icon">🧮</div>
+                全功能计算器
+            </div>
+            <div class="mode-toggle">
+                <button class="toggle-btn" id="historyBtn">历史</button>
+                <button class="toggle-btn" id="scientificBtn">科学</button>
+            </div>
+        </div>
+
+        <div class="display">
+            <div class="memory-indicator" id="memoryIndicator"></div>
+            <div class="angle-mode" id="angleMode">DEG</div>
+            <div class="equation" id="equation"></div>
+            <div class="result" id="result">0</div>
+        </div>
+
+        <div class="history-panel hidden fade-in" id="historyPanel">
+            <div class="history-title">计算历史</div>
+            <div id="historyList">
+                <div style="color: rgba(255,255,255,0.5); font-size: 12px;">暂无计算记录</div>
+            </div>
+        </div>
+
+        <div class="scientific-panel hidden fade-in" id="scientificPanel">
+            <div class="function-row">
+                <button class="btn btn-scientific" onclick="scientificFunction('sin')">sin</button>
+                <button class="btn btn-scientific" onclick="scientificFunction('cos')">cos</button>
+                <button class="btn btn-scientific" onclick="scientificFunction('tan')">tan</button>
+                <button class="btn btn-scientific" onclick="scientificFunction('log')">log</button>
+                <button class="btn btn-scientific" onclick="scientificFunction('ln')">ln</button>
+            </div>
+            <div class="function-row">
+                <button class="btn btn-scientific" onclick="scientificFunction('sqrt')">√</button>
+                <button class="btn btn-scientific" onclick="scientificFunction('square')">x²</button>
+                <button class="btn btn-scientific" onclick="scientificFunction('cube')">x³</button>
+                <button class="btn btn-scientific" onclick="scientificFunction('power')">x^y</button>
+                <button class="btn btn-scientific" onclick="scientificFunction('factorial')">x!</button>
+            </div>
+            <div class="memory-row">
+                <button class="btn btn-memory" onclick="memoryFunction('MC')">MC</button>
+                <button class="btn btn-memory" onclick="memoryFunction('MR')">MR</button>
+                <button class="btn btn-memory" onclick="memoryFunction('M+')">M+</button>
+                <button class="btn btn-memory" onclick="memoryFunction('M-')">M-</button>
+                <button class="btn btn-memory" onclick="memoryFunction('MS')">MS</button>
+            </div>
+            <div class="constants-row">
+                <button class="btn btn-constant" onclick="insertConstant('pi')">π</button>
+                <button class="btn btn-constant" onclick="insertConstant('e')">e</button>
+                <button class="btn btn-constant" onclick="toggleAngleMode()" id="angleModeBtn">DEG</button>
+            </div>
+        </div>
+
+        <div class="button-grid">
+            <button class="btn btn-clear" onclick="clearAll()">AC</button>
+            <button class="btn btn-function" onclick="backspace()">⌫</button>
+            <button class="btn btn-function" onclick="inputOperator('%')">%</button>
+            <button class="btn btn-operator" onclick="inputOperator('÷')">÷</button>
+
+            <button class="btn btn-number" onclick="inputNumber('7')">7</button>
+            <button class="btn btn-number" onclick="inputNumber('8')">8</button>
+            <button class="btn btn-number" onclick="inputNumber('9')">9</button>
+            <button class="btn btn-operator" onclick="inputOperator('×')">×</button>
+
+            <button class="btn btn-number" onclick="inputNumber('4')">4</button>
+            <button class="btn btn-number" onclick="inputNumber('5')">5</button>
+            <button class="btn btn-number" onclick="inputNumber('6')">6</button>
+            <button class="btn btn-operator" onclick="inputOperator('-')">-</button>
+
+            <button class="btn btn-number" onclick="inputNumber('1')">1</button>
+            <button class="btn btn-number" onclick="inputNumber('2')">2</button>
+            <button class="btn btn-number" onclick="inputNumber('3')">3</button>
+            <button class="btn btn-operator" onclick="inputOperator('+')">+</button>
+
+            <button class="btn btn-number btn-zero" onclick="inputNumber('0')">0</button>
+            <button class="btn btn-number" onclick="inputDecimal()">.</button>
+            <button class="btn btn-equals" onclick="calculate()">=</button>
+        </div>
+    </div>
+
+    <script>
+        // 计算器状态
+        let currentInput = '0';
+        let equation = '';
+        let history = [];
+        let memory = 0;
+        let angleMode = 'DEG'; // DEG 或 RAD
+        let isScientificMode = false;
+        let showHistory = false;
+
+        // DOM 元素
+        const resultDisplay = document.getElementById('result');
+        const equationDisplay = document.getElementById('equation');
+        const memoryIndicator = document.getElementById('memoryIndicator');
+        const angleModeDisplay = document.getElementById('angleMode');
+        const historyPanel = document.getElementById('historyPanel');
+        const scientificPanel = document.getElementById('scientificPanel');
+        const historyList = document.getElementById('historyList');
+        const scientificBtn = document.getElementById('scientificBtn');
+        const historyBtn = document.getElementById('historyBtn');
+        const angleModeBtn = document.getElementById('angleModeBtn');
+
+        // 初始化
+        updateDisplay();
+        updateMemoryIndicator();
+
+        // 数字输入
+        function inputNumber(num) {
+            if (currentInput === '0' || currentInput === 'Error') {
+                currentInput = num;
+            } else {
+                currentInput += num;
+            }
+            updateDisplay();
+        }
+
+        // 小数点输入
+        function inputDecimal() {
+            if (currentInput === 'Error') return;
+            if (!currentInput.includes('.')) {
+                currentInput += '.';
+                updateDisplay();
+            }
+        }
+
+        // 操作符输入
+        function inputOperator(op) {
+            if (currentInput === 'Error') return;
+            equation = currentInput + ' ' + op + ' ';
+            currentInput = '0';
+            updateDisplay();
+        }
+
+        // 清空所有
+        function clearAll() {
+            currentInput = '0';
+            equation = '';
+            updateDisplay();
+        }
+
+        // 退格
+        function backspace() {
+            if (currentInput === 'Error') {
+                currentInput = '0';
+            } else if (currentInput.length > 1) {
+                currentInput = currentInput.slice(0, -1);
+            } else {
+                currentInput = '0';
+            }
+            updateDisplay();
+        }
+
+        // 计算
+        function calculate() {
+            if (currentInput === 'Error') return;
+            
+            try {
+                const fullEquation = equation + currentInput;
+                const result = evaluateExpression(fullEquation);
+                
+                if (isNaN(result) || !isFinite(result)) {
+                    currentInput = 'Error';
+                } else {
+                    // 添加到历史记录
+                    addToHistory(fullEquation, result.toString());
+                    currentInput = result.toString();
+                    equation = '';
+                }
+            } catch (error) {
+                currentInput = 'Error';
+            }
+            updateDisplay();
+        }
+
+        // 表达式求值
+        function evaluateExpression(expr) {
+            // 替换操作符
+            expr = expr.replace(/×/g, '*').replace(/÷/g, '/');
+            return Function('"use strict"; return (' + expr + ')')();
+        }
+
+        // 科学计算函数
+        function scientificFunction(func) {
+            if (currentInput === 'Error') return;
+            
+            const num = parseFloat(currentInput);
+            let result;
+
+            try {
+                switch (func) {
+                    case 'sin':
+                        result = Math.sin(angleMode === 'DEG' ? toRadians(num) : num);
+                        break;
+                    case 'cos':
+                        result = Math.cos(angleMode === 'DEG' ? toRadians(num) : num);
+                        break;
+                    case 'tan':
+                        result = Math.tan(angleMode === 'DEG' ? toRadians(num) : num);
+                        break;
+                    case 'log':
+                        result = Math.log10(num);
+                        break;
+                    case 'ln':
+                        result = Math.log(num);
+                        break;
+                    case 'sqrt':
+                        result = Math.sqrt(num);
+                        break;
+                    case 'square':
+                        result = num * num;
+                        break;
+                    case 'cube':
+                        result = num * num * num;
+                        break;
+                    case 'power':
+                        inputOperator('^');
+                        return;
+                    case 'factorial':
+                        if (num < 0 || !Number.isInteger(num) || num > 170) {
+                            result = 'Error';
+                        } else {
+                            result = factorial(num);
+                        }
+                        break;
+                    default:
+                        result = num;
+                }
+
+                if (result === 'Error' || isNaN(result) || !isFinite(result)) {
+                    currentInput = 'Error';
+                } else {
+                    currentInput = result.toString();
+                }
+            } catch (error) {
+                currentInput = 'Error';
+            }
+            updateDisplay();
+        }
+
+        // 内存功能
+        function memoryFunction(action) {
+            const num = parseFloat(currentInput);
+            if (isNaN(num)) return;
+
+            switch (action) {
+                case 'MC':
+                    memory = 0;
+                    break;
+                case 'MR':
+                    currentInput = memory.toString();
+                    break;
+                case 'M+':
+                    memory += num;
+                    break;
+                case 'M-':
+                    memory -= num;
+                    break;
+                case 'MS':
+                    memory = num;
+                    break;
+            }
+            updateMemoryIndicator();
+            updateDisplay();
+        }
+
+        // 插入常数
+        function insertConstant(constant) {
+            switch (constant) {
+                case 'pi':
+                    currentInput = Math.PI.toString();
+                    break;
+                case 'e':
+                    currentInput = Math.E.toString();
+                    break;
+            }
+            updateDisplay();
+        }
+
+        // 切换角度模式
+        function toggleAngleMode() {
+            angleMode = angleMode === 'DEG' ? 'RAD' : 'DEG';
+            angleModeDisplay.textContent = angleMode;
+            angleModeBtn.textContent = angleMode;
+        }
+
+        // 辅助函数
+        function toRadians(degrees) {
+            return degrees * (Math.PI / 180);
+        }
+
+        function factorial(n) {
+            if (n === 0 || n === 1) return 1;
+            let result = 1;
+            for (let i = 2; i <= n; i++) {
+                result *= i;
+            }
+            return result;
+        }
+
+        // 更新显示
+        function updateDisplay() {
+            resultDisplay.textContent = currentInput;
+            equationDisplay.textContent = equation;
+        }
+
+        // 更新内存指示器
+        function updateMemoryIndicator() {
+            memoryIndicator.textContent = memory !== 0 ? 'M' : '';
+        }
+
+        // 添加到历史记录
+        function addToHistory(equation, result) {
+            history.unshift({ equation, result });
+            if (history.length > 10) {
+                history = history.slice(0, 10);
+            }
+            updateHistoryDisplay();
+        }
+
+        // 更新历史记录显示
+        function updateHistoryDisplay() {
+            if (history.length === 0) {
+                historyList.innerHTML = '<div style="color: rgba(255,255,255,0.5); font-size: 12px;">暂无计算记录</div>';
+            } else {
+                historyList.innerHTML = history.map(item => `
+                    <div class="history-item">
+                        <div class="history-equation">${item.equation}</div>
+                        <div class="history-result">= ${item.result}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // 切换历史面板
+        historyBtn.addEventListener('click', function() {
+            showHistory = !showHistory;
+            if (showHistory) {
+                historyPanel.classList.remove('hidden');
+                historyBtn.classList.add('active');
+                scientificPanel.classList.add('hidden');
+                scientificBtn.classList.remove('active');
+                isScientificMode = false;
+            } else {
+                historyPanel.classList.add('hidden');
+                historyBtn.classList.remove('active');
+            }
+        });
+
+        // 切换科学模式
+        scientificBtn.addEventListener('click', function() {
+            isScientificMode = !isScientificMode;
+            if (isScientificMode) {
+                scientificPanel.classList.remove('hidden');
+                scientificBtn.classList.add('active');
+                historyPanel.classList.add('hidden');
+                historyBtn.classList.remove('active');
+                showHistory = false;
+            } else {
+                scientificPanel.classList.add('hidden');
+                scientificBtn.classList.remove('active');
+            }
+        });
+
+        // 键盘支持
+        document.addEventListener('keydown', function(event) {
+            const key = event.key;
+            
+            if (key >= '0' && key <= '9') {
+                inputNumber(key);
+            } else if (key === '.') {
+                inputDecimal();
+            } else if (key === '+') {
+                inputOperator('+');
+            } else if (key === '-') {
+                inputOperator('-');
+            } else if (key === '*') {
+                inputOperator('×');
+            } else if (key === '/') {
+                event.preventDefault();
+                inputOperator('÷');
+            } else if (key === '%') {
+                inputOperator('%');
+            } else if (key === 'Enter' || key === '=') {
+                calculate();
+            } else if (key === 'Escape') {
+                clearAll();
+            } else if (key === 'Backspace') {
+                backspace();
+            }
+        });
+    </script>
+</body>
+</html>
