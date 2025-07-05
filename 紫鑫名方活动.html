@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>给细胞充电 为生命加油 - 全国大型惠民活动</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #4ECDC4, #1A535C);
+        }
+        .flowchart-arrow {
+            position: relative;
+            width: 100%;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FF6B6B;
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="bg-[#F7FFF7] text-[#1A535C]">
+
+    
+    <div class="gradient-bg text-white text-center p-8 shadow-lg">
+        <h1 class="text-4xl md:text-5xl font-black mb-2 animate-pulse">[福] 给细胞充电 为生命加油 [福]</h1>
+        <p class="text-xl md:text-2xl font-bold mb-4">全国大型惠民活动震撼来袭！</p>
+        <div class="bg-white/20 rounded-xl p-4 inline-block">
+            <p class="text-lg">全国仅限</p>
+            <p class="text-5xl font-black text-[#FFD166]">8000<span class="text-2xl ml-2">台</span></p>
+            <p class="text-lg">生物电治疗仪免费送！</p>
+        </div>
+    </div>
+
+    <main class="container mx-auto p-4 md:p-8">
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+            
+            <div class="md:col-span-2 lg:col-span-3 bg-white rounded-2xl shadow-xl p-6 md:p-8 text-center">
+                <h2 class="text-3xl font-bold text-[#FF6B6B] mb-2">核心产品: 紫鑫名方</h2>
+                <p class="max-w-3xl mx-auto text-lg mb-4">【国药标准】专利产品，活动期间仅需 <span class="text-4xl font-black text-[#FF6B6B]">¥19.9</span>/支。活动结束后立即恢复原价！抓住机会，享受空前优惠！</p>
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h3 class="text-2xl font-bold mb-4">基础订购赠品价值对比</h3>
+                    <p class="mb-4 text-gray-600">选择不同的订购方案，您获得的赠品价值也随之飙升。下图清晰展示了您在不同订购档位获得的实际产品和高价值设备，买得越多，赠送越多，优惠力度史无前例！</p>
+                    <div class="chart-container h-80 md:h-96">
+                        <canvas id="baseOfferChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="md:col-span-2 lg:col-span-3 bg-white rounded-2xl shadow-xl p-6 md:p-8 text-center">
+                <h2 class="text-3xl font-bold text-[#4ECDC4] mb-4">强强组合: 叠加福利, 健康加倍!</h2>
+                <p class="max-w-3xl mx-auto text-lg mb-8">单品已是精品，组合更是王牌！紫鑫名方联合多款明星产品，推出组合优惠。不仅享受紫鑫名方本身的折扣，更能免费获得其他高效产品，实现1+1>2的健康效果！</p>
+            </div>
+
+            
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-2xl font-bold mb-2">组合一: +三清五宝方</h3>
+                <p class="mb-4 text-gray-600">此组合专注于深度排毒。下图展示了购买不同数量的紫鑫名方，您可以免费获得的三清五宝方数量。赠品比例随购买量增加而提高，实现健康投资效益最大化。</p>
+                <div class="chart-container h-80">
+                    <canvas id="combo1Chart"></canvas>
+                </div>
+            </div>
+
+            
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-2xl font-bold mb-2">组合二: +鹿血晶</h3>
+                 <p class="mb-4 text-gray-600">鹿血晶作为珍贵的双清因子，是加速康复的利器。此优惠组合让您在享受紫鑫名方疗效的同时，免费获得等量的鹿血晶。本次活动<span class="font-bold text-[#FF6B6B]">仅限8000盒，3天可报</span>，先到先得！</p>
+                <div class="chart-container h-80">
+                    <canvas id="combo2Chart"></canvas>
+                </div>
+            </div>
+
+            
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-2xl font-bold mb-2">组合三: +云南全株三七</h3>
+                <p class="mb-4 text-gray-600">打通心脑通路，为生命保驾护航。此组合赠送的全株三七数量惊人，购买15盒即可免费获赠30盒！全国仅剩不到<span class="font-bold text-[#FF6B6B]">2000盒</span>，机会稍纵即逝！</p>
+                <div class="text-center py-8">
+                     <div class="mb-4">
+                        <p class="font-bold text-lg">订购5盒紫鑫名方, 送:</p>
+                        <p class="text-3xl text-[#4ECDC4]">🌿🌿🌿🌿🌿 <span class="text-xl font-bold ml-2">(5盒)</span></p>
+                    </div>
+                    <div class="mb-4">
+                        <p class="font-bold text-lg">订购10盒紫鑫名方, 送:</p>
+                        <p class="text-3xl text-[#4ECDC4]">🌿🌿🌿🌿🌿🌿🌿🌿🌿🌿�🌿🌿🌿🌿 <span class="text-xl font-bold ml-2">(15盒)</span></p>
+                    </div>
+                    <div>
+                        <p class="font-bold text-lg">订购15盒紫鑫名方, 送:</p>
+                        <p class="text-3xl text-[#4ECDC4]">🌿🌿🌿🌿🌿🌿🌿🌿🌿🌿<br>🌿🌿🌿🌿🌿🌿🌿🌿🌿🌿<br>🌿🌿🌿🌿🌿🌿🌿🌿🌿🌿 <span class="text-xl font-bold ml-2">(30盒)</span></p>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class="md:col-span-2 lg:col-span-3 bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-2xl font-bold text-center mb-4">组合四: +九窍心方 (道家养生组合)</h3>
+                <p class="text-center mb-6 text-gray-600">紫鑫名方与九窍心方强强联手，融合道家养生文化，通过打通人体九窍，实现解除疾病与延缓衰老的双重功效。下面流程图展示了它们的协同作用。</p>
+                <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
+                    <div class="text-center">
+                        <div class="p-4 border-4 border-[#4ECDC4] rounded-xl shadow-lg">
+                            <p class="text-xl font-bold">紫鑫名方</p>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold text-[#FF6B6B]">+</div>
+                    <div class="text-center">
+                        <div class="p-4 border-4 border-[#4ECDC4] rounded-xl shadow-lg">
+                            <p class="text-xl font-bold">九窍心方</p>
+                        </div>
+                    </div>
+                    <div class="flowchart-arrow hidden md:block">→</div>
+                     <div class="flowchart-arrow block md:hidden">↓</div>
+                    <div class="text-center space-y-4">
+                        <div class="p-3 bg-[#FFD166] text-[#1A535C] rounded-xl shadow-lg">
+                            <p class="text-lg font-bold">打通九窍，合五脏</p>
+                        </div>
+                         <div class="p-3 bg-[#FFD166] text-[#1A535C] rounded-xl shadow-lg">
+                            <p class="text-lg font-bold">延缓细胞衰老</p>
+                        </div>
+                    </div>
+                </div>
+                 <div class="mt-6">
+                    <p class="text-lg font-bold text-center">申请25盒紫鑫名方，即送<span class="text-3xl text-[#FF6B6B]">30</span>盒九窍心方！</p>
+                </div>
+            </div>
+
+            
+            <div class="md:col-span-2 lg:col-span-3 bg-red-500 text-white rounded-2xl shadow-2xl p-6 md:p-10 text-center transform hover:scale-105 transition-transform duration-300">
+                <h2 class="text-4xl font-black mb-4">[!] 最终机会: 即将断货 [!]</h2>
+                <p class="text-xl mb-6">因核心原料天然野生鹿茸异常珍贵，紫鑫名方库存告急！本次慈善活动是您以优惠价大量囤货的最后机会！</p>
+                <div class="bg-white/90 text-[#FF6B6B] rounded-xl p-6">
+                    <p class="text-2xl font-bold text-gray-800">申购 <span class="text-5xl font-black">25</span> 盒紫鑫名方</p>
+                    <p class="text-5xl font-black my-4 animate-bounce">👇</p>
+                    <p class="text-2xl font-bold text-gray-800">免费再送 <span class="text-5xl font-black">10</span> 盒!</p>
+                </div>
+                 <p class="mt-6 text-xl">活动结束后，紫鑫名方将出现全国性断货，机会仅此一次！</p>
+                 <button class="mt-6 w-full bg-[#FFD166] text-[#1A535C] text-2xl font-bold py-4 px-8 rounded-xl shadow-lg hover:bg-yellow-400 transition-colors">
+                    [握手] 立即联系您的群主报名 [握手]
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center p-6 mt-8 bg-gray-800 text-white">
+        <p class="mb-2">重要提示：本内容基于活动宣传材料整理，不构成医疗建议。在购买或使用任何健康产品前，请务必咨询专业医疗人士。</p>
+        <p>&copy; 2025 紫鑫名方全国惠民活动</p>
+    </footer>
+    
+
+    <script>
+        const FONT_COLOR = '#1A535C';
+        const GRID_COLOR = 'rgba(26, 83, 92, 0.1)';
+        const PALETTE = {
+            orange: '#FF6B6B',
+            teal: '#4ECDC4',
+            yellow: '#FFD166',
+            navy: '#1A535C',
+            cream: '#F7FFF7'
+        };
+
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+              return label.join(' ');
+            }
+            return label;
+        };
+        
+        const wrapLabel = (label) => {
+            const maxLength = 16;
+            if (label.length <= maxLength) return label;
+            
+            const words = label.split(' ');
+            const lines = [];
+            let currentLine = '';
+
+            words.forEach(word => {
+                if ((currentLine + word).length > maxLength) {
+                    lines.push(currentLine.trim());
+                    currentLine = '';
+                }
+                currentLine += word + ' ';
+            });
+            lines.push(currentLine.trim());
+            return lines;
+        };
+
+        const chartOptions = {
+            maintainAspectRatio: false,
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: FONT_COLOR,
+                        font: { size: 14 }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        title: tooltipTitleCallback
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: FONT_COLOR, font: { size: 12 } },
+                    grid: { color: GRID_COLOR }
+                },
+                y: {
+                    ticks: { color: FONT_COLOR, font: { size: 12 } },
+                    grid: { color: GRID_COLOR },
+                    beginAtZero: true
+                }
+            }
+        };
+
+        
+        const baseOfferCtx = document.getElementById('baseOfferChart').getContext('2d');
+        new Chart(baseOfferCtx, {
+            type: 'bar',
+            data: {
+                labels: ['订购6盒', '订购10盒', '订购15盒'],
+                datasets: [{
+                    label: '获赠紫鑫名方 (盒)',
+                    data: [1, 1, 3],
+                    backgroundColor: PALETTE.teal,
+                    yAxisID: 'y',
+                }, {
+                    label: '获赠治疗仪 (台)',
+                    data: [0, 1, 2],
+                    backgroundColor: PALETTE.orange,
+                    yAxisID: 'y1',
+                }]
+            },
+            options: {
+                ...chartOptions,
+                scales: {
+                     x: { ticks: { color: FONT_COLOR, font: { size: 12 } }, grid: { display: false } },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: { display: true, text: '赠品(盒)', color: FONT_COLOR },
+                        ticks: { color: FONT_COLOR },
+                         grid: { color: GRID_COLOR }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: { display: true, text: '设备(台)', color: FONT_COLOR },
+                        ticks: { color: FONT_COLOR, stepSize: 1 },
+                        grid: { display: false },
+                    }
+                }
+            }
+        });
+
+        
+        const combo1Ctx = document.getElementById('combo1Chart').getContext('2d');
+        new Chart(combo1Ctx, {
+            type: 'bar',
+            data: {
+                labels: ['订购7盒套餐', '订购10盒套餐', '订购15盒套餐'],
+                datasets: [{
+                    label: '购买的紫鑫名方 (盒)',
+                    data: [7, 10, 15],
+                    backgroundColor: PALETTE.teal,
+                }, {
+                    label: '赠送的三清五宝方 (盒)',
+                    data: [5, 10, 20],
+                    backgroundColor: PALETTE.orange,
+                }, {
+                    label: '额外赠送紫鑫名方 (盒)',
+                    data: [0, 1, 3],
+                    backgroundColor: PALETTE.yellow,
+                }]
+            },
+            options: {
+                ...chartOptions,
+                scales: {
+                    x: { stacked: true, ticks: { color: FONT_COLOR, font: { size: 12 } }, grid: { display: false } },
+                    y: { stacked: true, ticks: { color: FONT_COLOR }, grid: { color: GRID_COLOR } }
+                }
+            }
+        });
+
+        
+        const combo2Ctx = document.getElementById('combo2Chart').getContext('2d');
+        new Chart(combo2Ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['购买的紫鑫名方 (10盒)', '免费赠送的鹿血晶 (10盒)'],
+                datasets: [{
+                    label: '订10送10套餐',
+                    data: [10, 10],
+                    backgroundColor: [PALETTE.teal, PALETTE.orange],
+                    borderColor: PALETTE.cream,
+                    borderWidth: 5
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                plugins: {
+                    legend: {
+                         position: 'bottom',
+                         labels: { color: FONT_COLOR, font: { size: 14 } }
+                    },
+                    title: {
+                        display: true,
+                        text: '订10送10! 价值翻倍',
+                        color: FONT_COLOR,
+                        font: { size: 18, weight: 'bold'}
+                    },
+                    tooltip: {
+                         callbacks: { title: tooltipTitleCallback }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+�
